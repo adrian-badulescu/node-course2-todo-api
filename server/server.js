@@ -20,14 +20,14 @@ app.post('/todos', (req, res) => {
     });
 
     todo.save()
-    .then((doc) => {
-        console.log(`Todo item saved successfully as: ${doc}`);
-        res.status(200).send(doc);
-    })
-    .catch((e) => {
-        console.log(`Unable to save the todo item, the error is: ${e}`);
-        res.status(400).send(e);
-    });
+        .then((doc) => {
+            console.log(`Todo item saved successfully as: ${doc}`);
+            res.status(200).send(doc);
+        })
+        .catch((e) => {
+            console.log(`Unable to save the todo item, the error is: ${e}`);
+            res.status(400).send(e);
+        });
 });
 
 app.get('/todos', (req, res) => {
@@ -42,3 +42,7 @@ app.get('/todos', (req, res) => {
 app.listen(PORT, () => {
     console.log(`The app is running on port: ${PORT}`);
 });
+
+
+
+module.exports = { app };
