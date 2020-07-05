@@ -1,6 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-const PORT = 3000;
+const port = process.env.PORT || 3000;
 
 
 
@@ -66,8 +66,8 @@ app.get('/todos/:id', (req, res) => {
 
 
 
-app.listen(PORT, () => {
-    console.log(`The app is running on port: ${PORT}`);
+app.listen(port, () => {
+    console.log(`The app is running on port: ${port}`);
 });
 
 
