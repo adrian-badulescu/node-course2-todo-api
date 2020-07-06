@@ -9,9 +9,9 @@ const todos = [{
     _id: new ObjectID(),
     text: 'First test todo'
 }, {
-    _id: '5eff3c2981eaf249e0aa0fb6',
+    _id: new ObjectID,
     text: 'Second test todo'
-}];7
+}];
 
 beforeEach((done) => {
     Todo.remove({})
@@ -94,29 +94,74 @@ describe('POST /todos', () => {
 describe('GET /todos/:id', () => {
     it('should return todo doc', (done) => {
         request(app)
-        .get(`/todos/${todos[0]._id.toHexString()}`)
-        .expect(200)
-        .expect((res) => {
-            expect(res.body.todo.text).toBe(todos[0].text)
-        })
-        .end(done);
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(todos[0].text)
+            })
+            .end(done);
 
     });
 
-    it('should return 404 if todo not found', (done) =>{
+    it('should return 404 if todo not found', (done) => {
         let hexId = new ObjectID().toHexString()
 
         request(app)
-        .get(`/todos/${hexId}`)
-        .expect(404)
-        .end(done)
+            .get(`/todos/${hexId}`)
+            .expect(404)
+            .end(done)
     });
 
-    it('should return 404 for non-objects ids', (done) =>{
+    it('should return 400 for non-objects ids', (done) => {
         request(app)
-        .get(`/todos/123`)
-        .expect(404)
-        .end(done)
+            .get(`/todos/123`)
+            .expect(400)
+            .end(done)
     });
 });
+
+
+describe('DELETE /todos/:id', () => {
+    it('should remove a todo', (done) => {
+        let hexId = todos[1]._id.toHexString();
+
+        request(app)
+            .delete(`/todos/${hexId}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo._id).toBe(hexId);
+            })
+            .end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
+
+                // query DB using findById to see that ID exists
+
+                Todo.findById(hexId)
+                    .then((todo) => {
+                        expect(todo).toBeFalsy();
+                        done();
+                    })
+                    .catch((e) => {
+                        done(e);
+                    })
+            });
+    })
+
+    it('should return a 400 if a query is malformed', (done) => {
+        request(app)
+            .get(`/todos/123`)
+            .expect(400)
+            .end(done)
+    })
+
+    it('should return a 404 if the document don\'t exist', (done) => {
+        let hexId = new ObjectID().toHexString();
+        request(app)
+            .get(`/todos/${hexId}`)
+            .expect(404)
+            .end(done)
+    })
+})
 
